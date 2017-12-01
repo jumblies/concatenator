@@ -1,28 +1,38 @@
-import os
+import os, shutil
 from Tkinter import *
 import Tkinter, tkFileDialog
 import datetime
+import os
 
-def timeStamped(fname, fmt='%Y-%m-%d-%H-%M-%S_{fname}'):
+#Function to timestamp the filename
+def timeStamped(fname, fmt='%Y-%m-%d_{fname}'):
     return datetime.datetime.now().strftime(fmt).format(fname=fname)
+
+home = os.path.expanduser('~')
+## f = tkFileDialog.askopenfile(initialdir = home)
 
 
 root = Tk()
 root.withdraw()
-current_directory = tkFileDialog.askdirectory()
+current_directory = tkFileDialog.askdirectory(initialdir = (home+"\Desktop\FF DOWNLOADS\linkfolder"))
 ##root.filename = tkFileDialog.askopenfilename(initialdir = "/",title = "Select file",filetypes = (("text files","*.txt"),("all files","*.*")))
 
 
 ## Maybe add a TK file selection box here. 
+
 os.chdir(current_directory)
-print(os.getcwd())
-outputFile = open(timeStamped("output"), "a+")
+##print(os.getcwd())
+
+timeStampedFN = timeStamped("output.txt")
+outputFile = open(timeStampedFN, "a+")
+archiveFullFN = (os.getcwd()+ "\\" + timeStampedFN)
 
 
+print(archiveFullFN)
 #print(os.listdir("."))
 filelist = (os.listdir(current_directory))
 for file in filelist:
-    print(file)
+##    print(file)
     if file.startswith("RSD"):
         f = open(file, "r")
         outputFile.write(f.read())
@@ -30,3 +40,12 @@ for file in filelist:
         os.unlink(os.path.join(current_directory,file))
                   
 outputFile.close()
+
+try:
+    relocFullFN = ("C:\Users\g\Desktop\OUTPUT ARCHIVES" + "\\" + timeStampedFN)
+    os.rename(archiveFullFN, relocFullFN)
+except:
+    os.rename(archiveFullFN, (relocFullFN+"_dupe.txt" ))
+shutil.rmtree(current_directory)
+
+
